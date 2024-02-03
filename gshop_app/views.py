@@ -15,11 +15,11 @@ def car_list_view(requst):
     return JsonResponse(data)
 
 
-def car_detail_view(requst, pk):
-    car = CarList.objects.get(pk=pk)
+def car_detail_view(request, pk):
+    car = CarList.objects.get(id=pk)
     data = {
         "name": car.name,
         "description": car.description,
-        "active": car.active,
+        "active": car.is_active,
     }
     return JsonResponse(data)
