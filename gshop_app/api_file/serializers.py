@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import CarList
+from ..models import CarList, Student
 
 # validators
 
@@ -12,14 +12,25 @@ def alphanumeric(value):
 
 
 class CarSerializer(serializers.ModelSerializer):
+
+    discounted_price = serializers.SerializerMethodField()
+
     class Meta:
         model = CarList
         # all attributes
-        # fields = '__all__'
+        fields = '__all__'
         # exclude = ['name'] kisi ek field ko nahi lena ho to
-        exclude = ['name']
+        # exclude = ['name']
         # if specified,
         # fields = ('id', 'name', 'description', 'is_active',)
+
+    def get_discounted_price(self, object):
+        if object.price is not None:
+            discountprice = object.price - 2
+            return discountprice
+        else:
+            # Handle the case where price is None (return a default value or handle it accordingly)
+            return None
 
 
 # class CarSerializer(serializers.Serializer):
@@ -60,3 +71,9 @@ class CarSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'name': 'Name and description must be different'})
         return data
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = '__all__'

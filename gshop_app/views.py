@@ -4,15 +4,20 @@ from django.shortcuts import render
 import json
 from django.http import JsonResponse, HttpResponse
 
-from gshop_app.api_file.serializers import CarSerializer
+from gshop_app.api_file.serializers import CarSerializer, StudentSerializer
 # Create your views here.
 # import django.shortcuts from render
-from .models import CarList
+from .models import CarList, Student
 from rest_framework.response import Response
 # from api_file import CarSerializer
 # from .serializers import CarSerializer
 
 from rest_framework.decorators import api_view
+
+# sql connection
+
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
 
 
 @api_view(['GET', 'POST'])
@@ -84,3 +89,31 @@ def car_detail_view(request, pk):
 #     }
 #     data_json = json.dumps(data)
 #     return HttpResponse(data_json, content_type="application/json")
+
+
+# for mysql connection
+@csrf_exempt
+def studentApi(request, student_id=0):
+    if request.method == 'GET':
+        student = Student.objects.all()
+        student_serializer = StudentSerializer(student, many=True)
+        return JsonResponse(student_serializer.data, safe=False)
+    elif request.method == 'POST':
+        student_data = JSONParser().parse(request)
+        student_serializer = StudentSerializer(data=student_data)
+        if student_serializer.is_valid():
+            student_serializer.save()
+            return JsonResponse("Added Successfully", safe=False)
+        return JsonResponse("Failed to Add", safe=False)
+    elif request.method == 'PUT':
+        student_data = JSONParser().parse(request)
+        student = Student.objects.get(id=student_id)
+        student_serializer = StudentSerializer(student, data=student_data)
+        if student_serializer.is_valid():
+            student_serializer.save()
+            return JsonResponse("Updated Successfully", safe=False)
+        return JsonResponse("Failed to Update", safe=False)
+    elif request.method == 'DELETE':
+        student = Student.objects.get(id=student_id)
+        student.delete()
+        return JsonResponse("Deleted Successfully", safe=False)
