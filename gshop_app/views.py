@@ -14,19 +14,34 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def car_list_view(requst):
-    car = CarList.objects.all()
-    serializer = CarSerializer(car, many=True)
-    return Response(serializer.data)
+    if requst.method == 'GET':
+        car = CarList.objects.all()
+        serializer = CarSerializer(car, many=True)
+        return Response(serializer.data)
+    if requst.method == 'POST':
+        serializer = CarSerializer(data=requst.data)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+
+            return Response(serializer.errors)
 
 
-@api_view()
+@api_view(['GET', 'PUT'])
 def car_detail_view(requst, pk):
-    car = CarList.objects.get(id=pk)
-    serializer = CarSerializer(car)
-    return Response(serializer.data)
-
+    if requst.method == 'GET':
+        car = CarList.objects.get(id=pk)
+        serializer = CarSerializer(car)
+        return Response(serializer.data)
+    if requst.method == 'PUT':
+        car = CarList.objects.get(id=pk)
+        serializer = CarSerializer(car, data=requst.data)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors)
 
 # def car_list_view(requst):
 #     cars = CarList.objects.all()
