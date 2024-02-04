@@ -1,4 +1,5 @@
 # Correct import statement in views.py
+from rest_framework import status
 from django.shortcuts import render
 import json
 from django.http import JsonResponse, HttpResponse
@@ -15,33 +16,41 @@ from rest_framework.decorators import api_view
 
 
 @api_view(['GET', 'POST'])
-def car_list_view(requst):
-    if requst.method == 'GET':
-        car = CarList.objects.all()
-        serializer = CarSerializer(car, many=True)
+def car_list_view(request):
+    if request.method == 'GET':
+        cars = CarList.objects.all()
+        serializer = CarSerializer(cars, many=True)
         return Response(serializer.data)
-    if requst.method == 'POST':
-        serializer = CarSerializer(data=requst.data)
+
+    if request.method == 'POST':
+        serializer = CarSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            # Return a 201 Created response
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-
-            return Response(serializer.errors)
+            # Return a 400 Bad Request response
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT'])
-def car_detail_view(requst, pk):
-    if requst.method == 'GET':
+def car_detail_view(request, pk):
+    try:
         car = CarList.objects.get(id=pk)
+    except CarList.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
         serializer = CarSerializer(car)
         return Response(serializer.data)
-    if requst.method == 'PUT':
-        car = CarList.objects.get(id=pk)
-        serializer = CarSerializer(car, data=requst.data)
+
+    if request.method == 'PUT':
+        serializer = CarSerializer(car, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            return Response(serializer.data)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # def car_list_view(requst):
 #     cars = CarList.objects.all()
