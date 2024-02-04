@@ -33,12 +33,12 @@ def car_list_view(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def car_detail_view(request, pk):
     try:
         car = CarList.objects.get(id=pk)
     except CarList.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'car not found'}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = CarSerializer(car)
@@ -51,6 +51,9 @@ def car_detail_view(request, pk):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'DELETE':
+        car.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 # def car_list_view(requst):
 #     cars = CarList.objects.all()
