@@ -4,10 +4,10 @@ from django.shortcuts import render
 import json
 from django.http import JsonResponse, HttpResponse
 
-from gshop_app.api_file.serializers import CarSerializer, StudentSerializer
+from gshop_app.api_file.serializers import CarSerializer, StudentSerializer, BookSerializer, ProductSerializer
 # Create your views here.
 # import django.shortcuts from render
-from .models import CarList, Student
+from .models import CarList, Student, Book, Product
 from rest_framework.response import Response
 # from api_file import CarSerializer
 # from .serializers import CarSerializer
@@ -59,6 +59,67 @@ def car_detail_view(request, pk):
     if request.method == 'DELETE':
         car.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# about book
+
+@api_view(['GET', 'POST'])
+def book_list_view(request):
+
+    if request.method == 'GET':
+        books = Book.objects.all()
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data)
+    if request.method == 'POST':
+        serializer = BookSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            # Return a 201 Created response
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST'])
+def product_list_view(request):
+    if request.method == 'GET':
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+    if request.method == 'POST':
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            # Return a 201 Created response
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def product_detail_view(request, pk):
+    try:
+        product = Product.objects.get(id=pk)
+    except Product.DoesNotExist:
+        return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = ProductSerializer(product, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    return Response({'error': 'Invalid request method'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 # def car_list_view(requst):
 #     cars = CarList.objects.all()

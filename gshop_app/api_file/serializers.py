@@ -1,7 +1,6 @@
-from rest_framework import serializers
-from ..models import CarList, Student
 
-# validators
+from rest_framework import serializers
+from ..models import CarList, Student, Book, VendorOne, Product
 
 
 def alphanumeric(value):
@@ -31,6 +30,14 @@ class CarSerializer(serializers.ModelSerializer):
         else:
             # Handle the case where price is None (return a default value or handle it accordingly)
             return None
+
+
+class BookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        # all attributes
+
+        fields = '__all__'
 
 
 # class CarSerializer(serializers.Serializer):
@@ -76,4 +83,16 @@ class CarSerializer(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
+        fields = '__all__'
+
+
+class VendorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VendorOne
+        fields = '__all__'
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
         fields = '__all__'
