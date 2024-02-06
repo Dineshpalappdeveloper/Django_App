@@ -4,10 +4,10 @@ from django.shortcuts import render
 import json
 from django.http import JsonResponse, HttpResponse
 
-from gshop_app.api_file.serializers import CarSerializer, StudentSerializer, BookSerializer, ProductSerializer
+from gshop_app.api_file.serializers import CarSerializer, StudentSerializer, BookSerializer, ProductSerializer, ShowRoomsListSerializer
 # Create your views here.
 # import django.shortcuts from render
-from .models import CarList, Student, Book, Product
+from .models import CarList, Student, Book, Product, ShowRoomsList
 from rest_framework.response import Response
 # from api_file import CarSerializer
 # from .serializers import CarSerializer
@@ -18,6 +18,25 @@ from rest_framework.decorators import api_view
 
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
+from rest_framework.views import APIView
+
+
+class showroom_View(APIView):
+
+    def get(self, request):
+        showrooms = ShowRoomsList.objects.all()
+        serializer = ShowRoomsListSerializer(showrooms, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ShowRoomsListSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            # Return a 201 Created response
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            # Return a 400 Bad Request response
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'POST'])

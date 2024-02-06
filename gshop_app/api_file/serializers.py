@@ -1,6 +1,8 @@
 
 from rest_framework import serializers
-from ..models import CarList, Student, Book, VendorOne, Product
+from django.core.exceptions import ValidationError
+
+from ..models import CarList, Student, Book, VendorOne, Product, ShowRoomsList
 
 
 def alphanumeric(value):
@@ -95,4 +97,10 @@ class VendorSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
+        fields = '__all__'
+
+
+class ShowRoomsListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShowRoomsList
         fields = '__all__'
