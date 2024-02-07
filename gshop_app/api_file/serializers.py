@@ -34,6 +34,19 @@ class CarSerializer(serializers.ModelSerializer):
             return None
 
 
+class ShowRoomsListSerializer(serializers.ModelSerializer):
+    # showRoomsList = CarSerializer(many=True, read_only=True)
+    # showRoomsList = serializers.StringRelatedField(many=True)
+    # showRoomsList = serializers.PrimaryKeyRelatedField(
+    #     many=True, read_only=True)
+    showRoomsList = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name="car_detail")
+
+    class Meta:
+        model = ShowRoomsList
+        fields = '__all__'
+
+
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
@@ -67,6 +80,7 @@ class BookSerializer(serializers.ModelSerializer):
 
     # field labels validation
 
+
     def validate_price(self, value):
         if value <= 20000.00:
             raise serializers.ValidationError(
@@ -97,10 +111,4 @@ class VendorSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = '__all__'
-
-
-class ShowRoomsListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ShowRoomsList
         fields = '__all__'

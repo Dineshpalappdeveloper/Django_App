@@ -25,7 +25,8 @@ class showroom_View(APIView):
 
     def get(self, request):
         showrooms = ShowRoomsList.objects.all()
-        serializer = ShowRoomsListSerializer(showrooms, many=True)
+        serializer = ShowRoomsListSerializer(
+            showrooms, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
@@ -37,6 +38,37 @@ class showroom_View(APIView):
         else:
             # Return a 400 Bad Request response
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class showRoomDetails(APIView):
+    def get(self, request, pk):
+        try:
+            showroom = ShowRoomsList.objects.get(id=pk)
+        except ShowRoomsList.DoesNotExist:
+            return Response({'error': 'showroom not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ShowRoomsListSerializer(showroom,)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        try:
+            showroom = ShowRoomsList.objects.get(id=pk)
+            serializer = ShowRoomsListSerializer(showroom, data=request.data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Log the exception and print the request data
+            print(f"Exception: {e}")
+            print(f"Request data: {request.data}")
+            return Response({"detail": "Error processing the request"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def delete(self, request, pk):
+        showroom = ShowRoomsList.objects.get(id=pk)
+        showroom.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'POST'])
