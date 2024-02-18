@@ -74,7 +74,8 @@ class Review(models.Model):
         CarList, on_delete=models.CASCADE, related_name='reviews', null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    db_table = 'user_review'
 
     def __str__(self):
 
-        return "the rating of the" + self.car.name+self.rating
+        return "the rating of the is" + self.car.name+self.rating

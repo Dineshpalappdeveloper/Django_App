@@ -88,7 +88,6 @@ class BookSerializer(serializers.ModelSerializer):
 
     # field labels validation
 
-
     def validate_price(self, value):
         if value <= 20000.00:
             raise serializers.ValidationError(
