@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
 
-from ..models import CarList, Student, Book, VendorOne, Product, ShowRoomsList
+from ..models import CarList, Student, Book, VendorOne, Product, ShowRoomsList, Review
 
 
 def alphanumeric(value):
@@ -12,9 +12,17 @@ def alphanumeric(value):
     return value
 
 
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        # all attributes
+        fields = '__all__'
+
+
 class CarSerializer(serializers.ModelSerializer):
 
     discounted_price = serializers.SerializerMethodField()
+    reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = CarList

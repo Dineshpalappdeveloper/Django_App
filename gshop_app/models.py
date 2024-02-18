@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.core.validators import MaxValueValidator, MinValueValidator
 # Create your models here.
 
 
@@ -64,3 +64,17 @@ class Product(models.Model):
     class Meta:
         # Specify the desired table name without the app prefix
         db_table = 'product'
+
+
+class Review(models.Model):
+    rating = models.IntegerField(
+        validators=[MinValueValidator, MaxValueValidator])
+    comments = models.CharField(max_length=255, blank=True)
+    car = models.ForeignKey(
+        CarList, on_delete=models.CASCADE, related_name='reviews', null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+
+        return "the rating of the" + self.car.name+self.rating

@@ -3,6 +3,8 @@ from rest_framework import status
 from django.shortcuts import render
 import json
 from django.http import JsonResponse, HttpResponse
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
 from gshop_app.api_file.serializers import CarSerializer, StudentSerializer, BookSerializer, ProductSerializer, ShowRoomsListSerializer
 # Create your views here.
@@ -25,9 +27,10 @@ class showroom_View(APIView):
 
     def get(self, request):
         showrooms = ShowRoomsList.objects.all()
+
         serializer = ShowRoomsListSerializer(
             showrooms, many=True, context={'request': request})
-        return Response(serializer.data)
+        return Response(serializer.data,)
 
     def post(self, request):
         serializer = ShowRoomsListSerializer(data=request.data)
@@ -134,8 +137,14 @@ def book_list_view(request):
 @api_view(['GET', 'POST'])
 def product_list_view(request):
     if request.method == 'GET':
-        products = Product.objects.all()
+        # Fetch products
+        products = Product.objects.filter(id=4)
+
+        # Serialize the data
+        # Assuming multiple products can be returned
         serializer = ProductSerializer(products, many=True)
+
+        # Return the response with serialized data
         return Response(serializer.data)
     if request.method == 'POST':
         serializer = ProductSerializer(data=request.data)
