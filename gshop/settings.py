@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import dj_database_url
 from pathlib import Path
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -135,3 +137,10 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_ALL_HEADERS = True
+
+
+#  global authentication added
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.BasicAuthentication'],
+#     'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated']
+# }

@@ -6,10 +6,10 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 
-from gshop_app.api_file.serializers import CarSerializer, StudentSerializer, BookSerializer, ProductSerializer, ShowRoomsListSerializer
+from gshop_app.api_file.serializers import CarSerializer, StudentSerializer, BookSerializer, ProductSerializer, ShowRoomsListSerializer, ReviewSerializer
 # Create your views here.
 # import django.shortcuts from render
-from .models import CarList, Student, Book, Product, ShowRoomsList
+from .models import CarList, Student, Book, Product, ShowRoomsList, Review
 from rest_framework.response import Response
 # from api_file import CarSerializer
 # from .serializers import CarSerializer
@@ -17,13 +17,47 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 # sql connection
-
+from rest_framework import mixins
+from rest_framework import generics
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
+from rest_framework.authentication import BaseAuthentication, SessionAuthentication
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+
+
+class ReviewDetails(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+
+class ReviewList(mixins.ListModelMixin,
+                 mixins.CreateModelMixin,
+                 generics.GenericAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 
 class showroom_View(APIView):
+    # authentication_classes = [BaseAuthentication]
+    # permission_classes = [IsAuthenticated] // only authenticated persion have access
+    # permission_classes = [AllowAny] // anyone can access
+    # permission_classes = [IsAdminUser] // only admin have access
+
+    #    session authentication
+    # authentication_classes = [SessionAuthentication]
+    # permission_classes = [IsAuthenticated] // only authenticated persion have access
+    # permission_classes = [AllowAny] // anyone can access
+    # permission_classes = [IsAdminUser] // only admin have access
 
     def get(self, request):
         showrooms = ShowRoomsList.objects.all()
